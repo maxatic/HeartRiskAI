@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Health Assessment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <a href="{% url 'landing' %}" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Home
+        </a>
+
+        <div class="header-section">
+            <h1><span>♡</span> Health Assessment</h1>
+            <p>Please provide accurate information for the most reliable risk prediction</p>
+        </div>
+
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}{% if field.field.required %} *{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <span class="help-text">{{ field.help_text }}</span>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div style="color: var(--danger-color); font-size: 0.8rem; margin-top: 5px;">
+                            {{ field.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit">Calculate Risk Assessment</button>
+            </form>
+        </div>
+
+        <div class="disclaimer-box">
+            <strong>Note:</strong> This assessment is for educational purposes only and should not replace professional
+            medical advice. Always consult with healthcare providers for medical decisions.
+        </div>
+    </div>
+</body>
+
+</html>

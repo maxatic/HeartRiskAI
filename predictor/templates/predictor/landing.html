@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CardioGuard Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'landing' %}" class="logo">
+                <span>♡</span> CardioGuard Assistant
+            </a>
+            <div class="nav-links">
+                <a href="#" class="btn-dark">Get Started</a>
+                <a href="#" class="btn-light">Login</a>
+                <a href="#" class="btn-dark">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-container">
+            <div class="badge">Machine-based Heart Attack Risk Prediction</div>
+            <h1>Understand Your Heart Attack Risk with an Advanced Machine Analysis</h1>
+            <p>Our machine-based system reviews your health information and provides a clear, data-driven estimate of
+                your heart attack risk — fast, simple, and easy to understand.</p>
+
+            <div class="hero-buttons">
+                <a href="{% url 'predict' %}" class="btn-primary">Start Free Assessment</a>
+                <a href="#" class="btn-secondary">Learn More</a>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h2>98%</h2>
+                    <p>Prediction Accuracy</p>
+                </div>
+                <div class="stat-item">
+                    <h2>24/7</h2>
+                    <p>Available Anytime</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- How It Works -->
+    <section class="features">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Simple, fast, and accurate health risk assessment</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-circle blue">⚡</div>
+                <h3>Enter Health Data</h3>
+                <p>Input your health parameters including systolic blood pressure, diastolic blood pressure and blood
+                    sugar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-circle purple">📈</div>
+                <h3>Machine Analysis</h3>
+                <p>Our machine system processes your inputs and calculates your heart attack risk using validated
+                    medical data.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-circle green">🛡️</div>
+                <h3>View Your Risk Score</h3>
+                <p>See a clear breakdown of your risk level in just a few seconds.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose -->
+    <section class="why-choose">
+        <div class="section-header">
+            <h2>Why Choose CardioGuard Assistant</h2>
+            <p>Advanced technology meets healthcare expertise</p>
+        </div>
+
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon">🏅</div>
+                <div class="benefit-text">
+                    <h3>Clinically Validated</h3>
+                    <p>Our model is trained on extensive medical datasets and validated by healthcare professionals.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">👥</div>
+                <div class="benefit-text">
+                    <h3>Trusted by Thousands</h3>
+                    <p>Join thousands of users who trust CardioGuard AI for their health monitoring.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🛡️</div>
+                <div class="benefit-text">
+                    <h3>Privacy Protected</h3>
+                    <p>Your health data is encrypted and never shared with third parties.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">💙</div>
+                <div class="benefit-text">
+                    <h3>Fast & Simple</h3>
+                    <p>Get your risk score in minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Take Control of Your Heart Health?</h2>
+            <p>Get your personalized risk assessment in just 5 minutes</p>
+            <a href="{% url 'predict' %}" class="btn-white">Calculate My Risk Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo"><span>♡</span> CardioGuard Assistant</div>
+            <p>Advanced machine-driven heart attack risk prediction</p>
+            <p class="copyright">© 2025 CardioGuard AI. For educational purposes only. Not a substitute for professional
+                medical advice.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
