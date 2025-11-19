@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .positive {
+            color: red;
+        }
+
+        .negative {
+            color: green;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Prediction Result</h1>
+    <div class="result {% if 'High' in result %}positive{% else %}negative{% endif %}">
+        {{ result }}
+    </div>
+    <a href="{% url 'home' %}">Check another patient</a>
+</body>
+
+</html>
