@@ -4,6 +4,8 @@ import joblib
 import pandas as pd
 import os
 from django.conf import settings
+from datetime import datetime
+from .instantdb_client import save_prediction
 
 # Load model once
 MODEL_PATH = os.path.join(settings.BASE_DIR, 'heart_attack_model.pkl')
@@ -121,6 +123,18 @@ def predict(request):
                     },
                     'previous_score': max(0, risk_score - 10) # Mock previous score
                 })
+                
+                # Save prediction to InstantDB
+                prediction_data = {
+                    'input_data': data,
+                    'risk_score': risk_score,
+                    'risk_level': risk_level,
+                    'risk_class': risk_class,
+                    'recommendation': recommendation,
+                    'factors': factors,
+                    'timestamp': datetime.now().isoformat()
+                }
+                save_prediction(prediction_data)
                 
                 return render(request, 'predictor/result.html', context)
             else:
