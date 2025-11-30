@@ -5,7 +5,7 @@
 <head>
     <title>CardioGuard Assistant</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'predictor/style.css' %}">
 </head>
@@ -18,9 +18,23 @@
                 <span><i class="fas fa-heart"></i></span> CardioGuard Assistant
             </a>
             <div class="nav-links">
-                <a href="#" class="btn-dark">Get Started</a>
-                <a href="#" class="btn-light">Login</a>
-                <a href="#" class="btn-dark">Sign Up</a>
+                {% if user.is_authenticated %}
+                    <span class="user-greeting">
+                        <i class="fas fa-user-circle"></i> 
+                        {{ user.full_name|default:user.email }}
+                        {% if user.role == 'doctor' %}
+                            <span class="role-tag doctor-tag">Doctor</span>
+                        {% else %}
+                            <span class="role-tag patient-tag">Patient</span>
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'predict' %}" class="btn-dark">Risk Assessment</a>
+                    <a href="{% url 'logout' %}" class="btn-light">Logout</a>
+                {% else %}
+                    <a href="{% url 'predict' %}" class="btn-dark">Get Started</a>
+                    <a href="{% url 'auth' %}" class="btn-light">Login</a>
+                    <a href="{% url 'auth' %}?mode=signup" class="btn-dark">Sign Up</a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -35,7 +49,7 @@
 
             <div class="hero-buttons">
                 <a href="{% url 'predict' %}" class="btn-primary">Start Free Assessment</a>
-                <a href="#" class="btn-secondary">Learn More</a>
+                <a href="#how-it-works" class="btn-secondary">Learn More</a>
             </div>
 
             <div class="stats-container">
@@ -52,7 +66,7 @@
     </header>
 
     <!-- How It Works -->
-    <section class="features">
+    <section class="features" id="how-it-works">
         <div class="section-header">
             <h2>How It Works</h2>
             <p>Simple, fast, and accurate health risk assessment</p>

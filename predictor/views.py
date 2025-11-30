@@ -1,11 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .forms import HeartRiskForm
+from .models import User, DoctorProfile, PatientProfile
 import joblib
 import pandas as pd
 import os
 from django.conf import settings
 from datetime import datetime
-from .instantdb_client import save_prediction
+from .instantdb_client import (
+    save_prediction,
+    save_user,
+    save_doctor_profile,
+    save_patient_profile
+)
 
 # Load model once
 MODEL_PATH = os.path.join(settings.BASE_DIR, 'heart_attack_model.pkl')
@@ -15,8 +24,160 @@ except FileNotFoundError:
     print(f"Error: Model not found at {MODEL_PATH}")
     model = None
 
+
 def landing(request):
     return render(request, 'predictor/landing.html')
+
+
+def auth_view(request):
+    """Combined auth view for login and signup"""
+    return render(request, 'predictor/auth.html', {
+        'page_title': 'Sign In'
+    })
+
+
+def signup_view(request):
+    """Handle user registration"""
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        role = request.POST.get('role', 'patient')
+        doctor_id = request.POST.get('doctor_id', '').strip()
+        
+        # Validation
+        if not full_name or not email or not password:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign Up',
+                'error': 'Please fill in all required fields.'
+            })
+        
+        if password != confirm_password:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign Up',
+                'error': 'Passwords do not match.'
+            })
+        
+        if len(password) < 6:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign Up',
+                'error': 'Password must be at least 6 characters.'
+            })
+        
+        # Check if user exists
+        if User.objects.filter(email=email).exists():
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign Up',
+                'error': 'An account with this email already exists.'
+            })
+        
+        try:
+            # Create user
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                full_name=full_name,
+                role=role
+            )
+            
+            # Save user to InstantDB
+            save_user({
+                'id': user.id,
+                'email': user.email,
+                'full_name': user.full_name,
+                'role': user.role,
+                'created_at': datetime.now().isoformat()
+            })
+            
+            # Create profile based on role
+            if role == 'doctor':
+                doctor_profile = DoctorProfile.objects.create(user=user)
+                # Save doctor profile to InstantDB
+                save_doctor_profile({
+                    'id': doctor_profile.id,
+                    'user_id': user.id,
+                    'license_number': '',
+                    'specialization': 'Cardiology',
+                    'created_at': datetime.now().isoformat()
+                })
+            else:
+                patient_profile = PatientProfile.objects.create(
+                    user=user,
+                    doctor_id_code=doctor_id
+                )
+                # Save patient profile to InstantDB
+                save_patient_profile({
+                    'id': patient_profile.id,
+                    'user_id': user.id,
+                    'doctor_id_code': doctor_id,
+                    'assigned_doctor_id': None,
+                    'created_at': datetime.now().isoformat()
+                })
+                # Try to link with doctor if doctor_id provided
+                if doctor_id:
+                    try:
+                        doctor_profile = DoctorProfile.objects.get(license_number=doctor_id)
+                        patient_profile.assigned_doctor = doctor_profile
+                        patient_profile.save()
+                    except DoctorProfile.DoesNotExist:
+                        pass  # Doctor not found, but continue
+            
+            # Log the user in
+            login(request, user)
+            
+            return redirect('landing')
+            
+        except Exception as e:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign Up',
+                'error': f'An error occurred: {str(e)}'
+            })
+    
+    return redirect('auth')
+
+
+def signin_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        role = request.POST.get('role', 'patient')
+        
+        if not email or not password:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign In',
+                'error': 'Please enter email and password.'
+            })
+        
+        # Authenticate user
+        user = authenticate(request, username=email, password=password)
+        
+        if user is not None:
+            # Check if role matches
+            if user.role != role:
+                return render(request, 'predictor/auth.html', {
+                    'page_title': 'Sign In',
+                    'error': f'This account is registered as a {user.role.capitalize()}, not a {role.capitalize()}.'
+                })
+            
+            login(request, user)
+            return redirect('landing')
+        else:
+            return render(request, 'predictor/auth.html', {
+                'page_title': 'Sign In',
+                'error': 'Invalid email or password.'
+            })
+    
+    return redirect('auth')
+
+
+def logout_view(request):
+    """Handle user logout"""
+    logout(request)
+    return redirect('landing')
+
 
 def predict(request):
     if request.method == 'POST':

@@ -126,3 +126,11 @@ INSTANTDB_ADMIN_TOKEN = os.environ.get('INSTANTDB_ADMIN_TOKEN', '')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom User Model
+AUTH_USER_MODEL = 'predictor.User'
+
+# Login/Logout URLs
+LOGIN_URL = 'auth'
+LOGIN_REDIRECT_URL = 'landing'
+LOGOUT_REDIRECT_URL = 'landing'

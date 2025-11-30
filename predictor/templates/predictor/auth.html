@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ page_title }} | CardioGuard Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}">
+</head>
+
+<body class="auth-body">
+    <!-- Navbar -->
+    <nav class="navbar auth-navbar">
+        <div class="nav-container">
+            <a href="{% url 'landing' %}" class="logo">
+                <span><i class="fas fa-heart"></i></span> CardioGuard Assistant
+            </a>
+            <a href="{% url 'landing' %}" class="back-to-home">Back to Home</a>
+        </div>
+    </nav>
+
+    <main class="auth-main">
+        <div class="auth-card" id="authCard">
+            <!-- Tab Toggle -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" data-tab="signin" id="signinTab">Sign In</button>
+                <button type="button" class="auth-tab" data-tab="signup" id="signupTab">Sign Up</button>
+            </div>
+
+            <!-- Dynamic Content Area -->
+            <div class="auth-content">
+                <!-- Header changes based on state -->
+                <div class="auth-header" id="authHeader">
+                    <h2 id="authTitle">Welcome Back</h2>
+                    <p id="authSubtitle">Sign in to your account</p>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="role-selection" id="roleSelection">
+                    <p class="role-prompt">I am a:</p>
+                    <div class="role-cards">
+                        <button type="button" class="role-card" data-role="patient" id="patientCard" aria-label="Select Patient role">
+                            <div class="role-icon patient-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>Patient</h3>
+                            <p>Get health assessments</p>
+                        </button>
+                        <button type="button" class="role-card" data-role="doctor" id="doctorCard" aria-label="Select Doctor role">
+                            <div class="role-icon doctor-icon">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <h3>Doctor</h3>
+                            <p>Manage patient care</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sign In Forms (hidden initially) -->
+                <div class="auth-form-container" id="signinFormContainer" style="display: none;">
+                    <div class="role-indicator">
+                        <span class="role-badge" id="signinRoleBadge">
+                            <i class="fas fa-user"></i> Signing in as Patient
+                        </span>
+                        <button type="button" class="change-role-btn" id="signinChangeRole">Change</button>
+                    </div>
+
+                    <form method="post" action="{% url 'signin' %}" class="auth-form" id="signinForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="role" id="signinRoleInput" value="patient">
+                        
+                        <div class="form-group">
+                            <label for="signin-email">Email</label>
+                            <input type="email" id="signin-email" name="email" placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signin-password">Password</label>
+                            <input type="password" id="signin-password" name="password" placeholder="Enter your password" required>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- Sign Up Forms (hidden initially) -->
+                <div class="auth-form-container" id="signupFormContainer" style="display: none;">
+                    <div class="role-indicator">
+                        <span class="role-badge" id="signupRoleBadge">
+                            <i class="fas fa-user"></i> Signing up as Patient
+                        </span>
+                        <button type="button" class="change-role-btn" id="signupChangeRole">Change</button>
+                    </div>
+
+                    <form method="post" action="{% url 'signup' %}" class="auth-form" id="signupForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="role" id="signupRoleInput" value="patient">
+
+                        <div class="form-group">
+                            <label for="signup-fullname">Full Name</label>
+                            <input type="text" id="signup-fullname" name="full_name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+                        </div>
+
+                        <!-- Doctor ID field (only for patients) -->
+                        <div class="form-group" id="doctorIdGroup">
+                            <label for="signup-doctor-id">Doctor ID (optional)</label>
+                            <input type="text" id="signup-doctor-id" name="doctor_id" placeholder="Enter your doctor's license number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" name="password" placeholder="Create a password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <input type="password" id="signup-confirm-password" name="confirm_password" placeholder="Confirm your password" required>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <!-- Error Messages -->
+                {% if error %}
+                <div class="auth-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="auth-success">
+                    <i class="fas fa-check-circle"></i>
+                    {{ success }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // State
+            let currentTab = 'signin';
+            let selectedRole = null;
+            
+            // Elements
+            const signinTab = document.getElementById('signinTab');
+            const signupTab = document.getElementById('signupTab');
+            const roleSelection = document.getElementById('roleSelection');
+            const signinFormContainer = document.getElementById('signinFormContainer');
+            const signupFormContainer = document.getElementById('signupFormContainer');
+            const authTitle = document.getElementById('authTitle');
+            const authSubtitle = document.getElementById('authSubtitle');
+            const patientCard = document.getElementById('patientCard');
+            const doctorCard = document.getElementById('doctorCard');
+            const signinRoleBadge = document.getElementById('signinRoleBadge');
+            const signupRoleBadge = document.getElementById('signupRoleBadge');
+            const signinRoleInput = document.getElementById('signinRoleInput');
+            const signupRoleInput = document.getElementById('signupRoleInput');
+            const signinChangeRole = document.getElementById('signinChangeRole');
+            const signupChangeRole = document.getElementById('signupChangeRole');
+            const doctorIdGroup = document.getElementById('doctorIdGroup');
+
+            // Tab switching
+            signinTab.addEventListener('click', function() {
+                currentTab = 'signin';
+                updateTabs();
+                resetToRoleSelection();
+            });
+
+            signupTab.addEventListener('click', function() {
+                currentTab = 'signup';
+                updateTabs();
+                resetToRoleSelection();
+            });
+
+            function updateTabs() {
+                if (currentTab === 'signin') {
+                    signinTab.classList.add('active');
+                    signupTab.classList.remove('active');
+                    authTitle.textContent = 'Welcome Back';
+                    authSubtitle.textContent = 'Sign in to your account';
+                } else {
+                    signinTab.classList.remove('active');
+                    signupTab.classList.add('active');
+                    authTitle.textContent = 'Create Account';
+                    authSubtitle.textContent = 'Join CardioGuard AI today';
+                }
+            }
+
+            function resetToRoleSelection() {
+                selectedRole = null;
+                roleSelection.style.display = 'block';
+                signinFormContainer.style.display = 'none';
+                signupFormContainer.style.display = 'none';
+                patientCard.classList.remove('selected');
+                doctorCard.classList.remove('selected');
+            }
+
+            // Role selection
+            patientCard.addEventListener('click', function() {
+                selectRole('patient');
+            });
+
+            doctorCard.addEventListener('click', function() {
+                selectRole('doctor');
+            });
+
+            function selectRole(role) {
+                selectedRole = role;
+                
+                // Update visual selection
+                if (role === 'patient') {
+                    patientCard.classList.add('selected');
+                    doctorCard.classList.remove('selected');
+                } else {
+                    doctorCard.classList.add('selected');
+                    patientCard.classList.remove('selected');
+                }
+
+                // Short delay for visual feedback
+                setTimeout(function() {
+                    showForm(role);
+                }, 200);
+            }
+
+            function showForm(role) {
+                roleSelection.style.display = 'none';
+                
+                const roleIcon = role === 'patient' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-stethoscope"></i>';
+                const roleText = role === 'patient' ? 'Patient' : 'Doctor';
+                
+                if (currentTab === 'signin') {
+                    signinFormContainer.style.display = 'block';
+                    signinRoleBadge.innerHTML = roleIcon + ' Signing in as ' + roleText;
+                    signinRoleInput.value = role;
+                } else {
+                    signupFormContainer.style.display = 'block';
+                    signupRoleBadge.innerHTML = roleIcon + ' Signing up as ' + roleText;
+                    signupRoleInput.value = role;
+                    
+                    // Show/hide Doctor ID field
+                    if (role === 'patient') {
+                        doctorIdGroup.style.display = 'block';
+                    } else {
+                        doctorIdGroup.style.display = 'none';
+                    }
+                }
+            }
+
+            // Change role buttons
+            signinChangeRole.addEventListener('click', function() {
+                resetToRoleSelection();
+            });
+
+            signupChangeRole.addEventListener('click', function() {
+                resetToRoleSelection();
+            });
+
+            // Password confirmation validation
+            const signupForm = document.getElementById('signupForm');
+            signupForm.addEventListener('submit', function(e) {
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                    return false;
+                }
+            });
+
+            // Check for URL parameters to set initial state
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const role = urlParams.get('role');
+
+            if (mode === 'signup') {
+                currentTab = 'signup';
+                updateTabs();
+            }
+
+            if (role) {
+                selectRole(role);
+            }
+        });
+    </script>
+</body>
+
+</html>
+
