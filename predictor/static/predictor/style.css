@@ -68,6 +68,10 @@ body {
     font-size: 1.4rem;
 }
 
+.logo span i {
+    display: inline-block;
+}
+
 .nav-links a {
     text-decoration: none;
     margin-left: 20px;
@@ -210,6 +214,10 @@ body {
     font-size: 1.5rem;
 }
 
+.icon-circle i {
+    font-size: 1.5rem;
+}
+
 .blue {
     background: #dbeafe;
     color: #3b82f6;
@@ -240,6 +248,15 @@ body {
 }
 
 .benefit-icon {
+    font-size: 2rem;
+    color: #3b82f6;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.benefit-icon i {
     font-size: 2rem;
 }
 
@@ -301,6 +318,10 @@ footer {
 
 .footer-logo span {
     color: #ef4444;
+}
+
+.footer-logo span i {
+    display: inline-block;
 }
 
 /* --- Prediction Form Specifics --- */
