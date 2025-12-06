@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #0f172a;
+  --background-color: #f8faff;
+  --card-bg: #ffffff;
+  --text-color: #1e293b;
+  --danger-color: #ef4444;
+  --warning-color: #eab308;
+  --success-color: #22c55e;
+  --accent-blue: #3b82f6;
+  --accent-purple: #a855f7;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-slate-800 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary border border-slate-200 px-6 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-colors;
+  }
+  
+  .btn-dark {
+    @apply bg-primary text-white px-4 py-2 rounded-md font-medium;
+  }
+  
+  .btn-light {
+    @apply text-slate-700 px-4 py-2 font-medium hover:text-slate-900;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-100 p-6;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg focus:bg-white focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/10 transition-all;
+  }
+}

@@ -38,11 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
     'predictor',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -134,3 +137,27 @@ AUTH_USER_MODEL = 'predictor.User'
 LOGIN_URL = 'auth'
 LOGIN_REDIRECT_URL = 'landing'
 LOGOUT_REDIRECT_URL = 'landing'
+
+# CORS Configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+# Add your Vercel domain when deployed
+# CORS_ALLOWED_ORIGINS.append("https://your-app.vercel.app")
+
+CORS_ALLOW_CREDENTIALS = True
+
+# REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'predictor.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
+
+# JWT Configuration
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', SECRET_KEY)
+JWT_ACCESS_TOKEN_LIFETIME = 60 * 60 * 24  # 24 hours in seconds
