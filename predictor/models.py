@@ -43,3 +43,20 @@ class PatientProfile(models.Model):
     
     def __str__(self):
         return f"Patient: {self.user.full_name}"
+
+
+class HeartRiskRecord(models.Model):
+    """Model to store heart attack risk dataset records"""
+    age = models.IntegerField()
+    gender = models.IntegerField(choices=[(1, 'Male'), (0, 'Female')])
+    heart_rate = models.IntegerField()
+    systolic_bp = models.IntegerField()
+    diastolic_bp = models.IntegerField()
+    blood_sugar = models.FloatField()
+    ck_mb = models.FloatField()
+    troponin = models.FloatField()
+    result = models.CharField(max_length=20)  # positive/negative
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Record {self.id} - {self.result}"
