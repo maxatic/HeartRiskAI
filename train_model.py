@@ -5,23 +5,54 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import LabelEncoder
 import joblib
-import kagglehub
 import os
+import argparse
+import sys
+import django
 
-# 1. Load Data
-print("Downloading/Loading dataset...")
-path = kagglehub.dataset_download("fatemehmohammadinia/heart-attack-dataset-tarik-a-rashid")
-csv_file = None
-for root, dirs, files in os.walk(path):
-    for file in files:
-        if file.endswith(".csv"):
-            csv_file = os.path.join(root, file)
-            break
+# 1. Setup Argument Parser
+parser = argparse.ArgumentParser(description='Train Heart Attack Risk Model')
+parser.add_argument('--file', type=str, help='Path to local CSV dataset (optional)')
+parser.add_argument('--source', type=str, choices=['local', 'db'], default='db', help='Data source: local (file) or db (database)')
+args = parser.parse_args()
 
-if not csv_file:
-    raise FileNotFoundError("CSV file not found in dataset path")
+# 2. Load Data
+df = None
 
-df = pd.read_csv(csv_file)
+if args.source == 'db':
+    print("Loading data from Database (SQLite)...")
+    sys.path.append(os.getcwd())
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'heart_risk_project.settings')
+    django.setup()
+    
+    from predictor.models import HeartRiskRecord
+    records = HeartRiskRecord.objects.all().values()
+    
+    if not records:
+        raise ValueError("No records found in database! Please run import_data first.")
+        
+    df = pd.DataFrame(list(records))
+    
+    # Rename DB fields (lowercase) to Model fields (Title Case)
+    df.rename(columns={
+        'age': 'Age', 'gender': 'Gender', 'heart_rate': 'Heart rate',
+        'systolic_bp': 'Systolic blood pressure', 'diastolic_bp': 'Diastolic blood pressure',
+        'blood_sugar': 'Blood sugar', 'ck_mb': 'CK-MB', 'troponin': 'Troponin',
+        'result': 'Result'
+    }, inplace=True)
+
+elif args.file or args.source == 'local':
+    target_file = args.file
+    if not target_file:
+        raise ValueError("--file argument required for local source")
+    print(f"Using local file: {target_file}")
+    if os.path.exists(target_file):
+        df = pd.read_csv(target_file)
+    else:
+        raise FileNotFoundError(f"File not found: {target_file}")
+
+if df is None:
+    raise FileNotFoundError("Could not load data from selected source")
 
 # 2. Preprocessing
 print("Preprocessing data...")
