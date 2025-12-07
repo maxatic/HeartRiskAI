@@ -40,6 +40,12 @@ if args.source == 'db':
         'blood_sugar': 'Blood sugar', 'ck_mb': 'CK-MB', 'troponin': 'Troponin',
         'result': 'Result'
     }, inplace=True)
+    
+    # Drop database-specific fields that are not features
+    if 'id' in df.columns:
+        df.drop('id', axis=1, inplace=True)
+    if 'created_at' in df.columns:
+        df.drop('created_at', axis=1, inplace=True)
 
 elif args.file or args.source == 'local':
     target_file = args.file
