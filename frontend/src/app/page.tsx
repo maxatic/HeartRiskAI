@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/lib/auth-context';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 
 // Custom hook for scroll animations
 function useScrollAnimation() {
@@ -59,7 +59,7 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }: { target: num
 }
 
 // Animated Section wrapper
-function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+function AnimatedSection({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const { ref, isVisible } = useScrollAnimation();
   
   return (
@@ -160,7 +160,7 @@ function LandingContent() {
           
           {/* CTA Buttons */}
           <div className="animate-scale-in opacity-0 flex flex-col sm:flex-row justify-center gap-4 mb-20" style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
-            <Link href="/predict" className="btn-primary group">
+            <Link href="/auth" className="btn-primary group">
               <span className="relative z-10 flex items-center gap-2">
                 Start Free Assessment
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,7 +413,7 @@ function LandingContent() {
                 Get your personalized heart risk assessment in just a few minutes. It&apos;s free, fast, and could save your life.
               </p>
               <Link 
-                href="/predict" 
+                href="/auth" 
                 className="inline-flex items-center gap-3 bg-white text-primary px-10 py-5 rounded-xl font-bold text-lg hover:bg-slate-100 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 Start Your Free Assessment
