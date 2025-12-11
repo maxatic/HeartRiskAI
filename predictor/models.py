@@ -21,8 +21,6 @@ class DoctorProfile(models.Model):
     """Extended profile for doctors"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_profile')
     license_number = models.CharField(max_length=50, blank=True)
-    specialization = models.CharField(max_length=100, blank=True, default='Cardiology')
-    created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Dr. {self.user.full_name}"
@@ -39,8 +37,6 @@ class PatientProfile(models.Model):
         related_name='patients'
     )
     doctor_id_code = models.CharField(max_length=50, blank=True, help_text="Optional doctor ID to link with a doctor")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
     def __str__(self):
         return f"Patient: {self.user.full_name}"
 
